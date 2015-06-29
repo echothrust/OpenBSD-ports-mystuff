@@ -1,0 +1,9 @@
+@comment $OpenBSD$
+@bin sbin/bofh-divert
+@bin sbin/dnsbl-divert
+share/examples/pf-diverters/
+share/examples/pf-diverters/bofh_divert
+share/examples/pf-diverters/README.md
+@sample ${RCDIR}/bofh-divert
+share/examples/pf-diverters/dnsbl_divert
+@sample ${RCDIR}/dnsbl-divert
