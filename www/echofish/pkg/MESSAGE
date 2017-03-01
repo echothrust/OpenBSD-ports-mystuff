@@ -1,0 +1,13 @@
+$OpenBSD$
+
++-----------------------------------------------------------------------
+| Running ${FULLPKGNAME} on OpenBSD
++-----------------------------------------------------------------------
+
+To enable echofish, please create a symbolic link:
+
+ln -sf ../echofish/htdocs \
+	/var/www/htdocs/echofish
+
+Echofish requires MariaDB database with BLACKHOLE, INNODB and MEMORY engines enabled to work correctly. 
+Furthermore the event scheduler needs to be enabled on /etc/my.cnf under the [mysqld] section.
