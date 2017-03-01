@@ -9,5 +9,39 @@ To enable echofish, please create a symbolic link:
 ln -sf ../echofish/htdocs \
 	/var/www/htdocs/echofish
 
-Echofish requires MariaDB database with BLACKHOLE, INNODB and MEMORY engines enabled to work correctly. 
-Furthermore the event scheduler needs to be enabled on /etc/my.cnf under the [mysqld] section.
+Echofish requires MariaDB database with the builtin scheduler enabled, so add the following in the [mysqld] section of /etc/my.cnf file:
+
+event_scheduler=ON
+
+Furthemore, the BLACKHOLE, INNODB and MEMORY engines must be enabled to work correctly. To enable BLACKHOLE:
+
+echo "INSTALL PLUGIN BLACKHOLE SONAME 'ha_blackhole.so';" | mysql
+
+A database and a mysql user must be created for echofish, e.g. (replace dbname, dbuser and dbpass parameters with your own values):
+
+echo "CREATE DATABASE ETS_echofish " \
+     "  CHARACTER SET utf8 COLLATE utf8_unicode_ci;" \
+     "GRANT ALL PRIVILEGES ON ETS_echofish.* " \
+     "  TO 'echofish'@'127.0.0.1' IDENTIFIED BY 'dbpass' WITH GRANT OPTION;" \
+     "FLUSH PRIVILEGES;" | mysql
+
+Make sure you edit /var/www/echofish/htdocs/protected/db.php and set database name, host and credentials with your values from the previous step.
+
+Next, configure httpd for php-fpm and echofish in /etc/httpd.conf, e.g.:
+
+    server "default" {
+        listen on * port 80
+        location "*.php" { 
+                fastcgi socket "/run/php-fpm.sock" 
+        } 
+        location "/echofish/*" { 
+                directory index index.php 
+        } 
+    }
+
+With the required services (mysqld, php56_fpm, httpd) running, access the uri:
+
+http://localhost/echofish
+
+For a syslog concentrator setup, forwarding logs to echofish database, check the guides for syslog_ng and rsyslog in /var/www/echofish/contrib directory.
+
