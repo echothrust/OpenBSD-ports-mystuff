@@ -11,7 +11,13 @@ echofish/contrib/Echofish-OpenBSD-syslog_ng.md
 echofish/contrib/OpenBSD-syslog-concentrator.md
 echofish/contrib/rsyslog-echofish.conf
 echofish/htdocs/
+@mode 750
+@owner www
+@group www
 echofish/htdocs/assets/
+@mode
+@owner
+@group
 echofish/htdocs/cron.php
 echofish/htdocs/css/
 echofish/htdocs/css/bg.gif

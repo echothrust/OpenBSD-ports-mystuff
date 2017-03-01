@@ -35,7 +35,7 @@ TINSTDIR =		${TRUEPREFIX}/echofish
 SUBST_VARS =		INSTDIR TINSTDIR
 
 do-install:
-	install -d -g www -m 460 ${WRKDIST}/htdocs/assets
+	${INSTALL_DATA_DIR} ${WRKDIST}/htdocs/assets
 	cp -Rp ${WRKDIST} ${INSTDIR}
 
 .include <bsd.port.mk>
