@@ -6,30 +6,37 @@ $OpenBSD$
 
 To enable echofish, please create a symbolic link:
 
-ln -sf ../echofish/htdocs \
+  ln -sf ../echofish/htdocs \
 	/var/www/htdocs/echofish
 
-Echofish requires MariaDB database with the builtin scheduler enabled,
-so add the following in the [mysqld] section of /etc/my.cnf file:
+Echofish requires MariaDB database with the BLACKHOLE storage engine and the
+internal event scheduler enabled. In the [mysqld] section of /etc/my.cnf file:
 
-event_scheduler=ON
+  event_scheduler=ON
+  plugin-load=ha_blackhole
 
-Furthemore, note that the BLACKHOLE, INNODB and MEMORY engines must be enabled.
-To enable BLACKHOLE:
-
-echo "INSTALL PLUGIN BLACKHOLE SONAME 'ha_blackhole.so';" | mysql
+Note: restart the service for the configuration changes to take effect.
 
 In mysql, assuming you're connected as admin, run (at least changing 'dbpass'):
 
-CREATE USER 'echofish'@'127.0.0.1' IDENTIFIED BY 'dbpass';
-CREATE DATABASE ETS_echofish CHARACTER SET utf8 COLLATE utf8_unicode_ci;
-GRANT ALL PRIVILEGES ON ETS_echofish.* TO 'echofish'@'127.0.0.1';
-FLUSH PRIVILEGES;
+  CREATE USER 'echofish'@'127.0.0.1' IDENTIFIED BY 'dbpass';
+  CREATE DATABASE ETS_echofish CHARACTER SET utf8 COLLATE utf8_unicode_ci;
+  GRANT ALL PRIVILEGES ON ETS_echofish.* TO 'echofish'@'127.0.0.1';
+  FLUSH PRIVILEGES;
 
-Make sure you edit /var/www/echofish/htdocs/protected/db.php and set database
+Make sure you edit ${INSTDIR}/htdocs/protected/db.php and set database
 name, host and credentials to your values.
 
-Next, configure httpd for php-fpm and echofish in /etc/httpd.conf, e.g.:
+Import the schema files from ${INSTDIR}/schema in the following order:
+
+  mysql ETS_echofish < 00_echofish-schema.sql
+  mysql ETS_echofish < echofish-dataonly.sql
+  mysql ETS_echofish < echofish-functions.sql
+  mysql ETS_echofish < echofish-procedures.mariadb10.sql
+  mysql ETS_echofish < echofish-triggers.sql
+  mysql ETS_echofish < echofish-events.sql
+
+Finally, configure httpd for php-fpm and echofish in /etc/httpd.conf, e.g.:
 
     server "default" {
         listen on * port 80
@@ -46,4 +53,4 @@ With the required services (mysqld, php56_fpm, httpd) running, access the uri:
 http://localhost/echofish
 
 For a syslog concentrator setup, forwarding logs to echofish database, check
-the guides for syslog_ng and rsyslog in /var/www/echofish/contrib directory.
+the guides for syslog_ng and rsyslog in ${INSTDIR}/contrib directory.
