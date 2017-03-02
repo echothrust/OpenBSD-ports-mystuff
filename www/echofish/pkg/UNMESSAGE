@@ -1,0 +1,25 @@
+$OpenBSD$
+
++-----------------------------------------------------------------------
+| Completely removing ${FULLPKGNAME}
++-----------------------------------------------------------------------
+
+Your database is still there.
+
+In mysql, if you want to finish wiping it out, you probably want to do
+something like:
+
+  DROP DATABASE ETS_echofish;
+  DROP USER echofish;
+
+Remove the symbolic link:
+
+  rm /var/www/htdocs/echofish
+
+Edit /etc/httpd.conf to remove this block:
+
+        #location "/echofish/*" { 
+        #        directory index index.php 
+        #} 
+
+Disable any redundant services (syslog, database, fpm and web server).
